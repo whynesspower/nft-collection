@@ -5,22 +5,22 @@ import Web3Modal from "web3modal";
 import { abi, NFT_CONTRACT_ADDRESS } from "../constants";
 import styles from "../styles/Home.module.css";
 export default function Home() {
-    // walletConnected keep track of whether the user's wallet is connected or not
-    const [walletConnected, setWalletConnected] = useState(false);
-    // presaleStarted keeps track of whether the presale has started or not
-    const [presaleStarted, setPresaleStarted] = useState(false);
-    // presaleEnded keeps track of whether the presale ended
-    const [presaleEnded, setPresaleEnded] = useState(false);
-    // loading is set to true when we are waiting for a transaction to get mined
-    const [loading, setLoading] = useState(false);
-    // checks if the currently connected MetaMask wallet is the owner of the contract
-    const [isOwner, setIsOwner] = useState(false);
-    // tokenIdsMinted keeps track of the number of tokenIds that have been minted
-    const [tokenIdsMinted, setTokenIdsMinted] = useState("0");
-    // Create a reference to the Web3 Modal (used for connecting to Metamask) which persists as long as the page is open
-    const web3ModalRef = useRef();
-  
-     /**
+  // walletConnected keep track of whether the user's wallet is connected or not
+  const [walletConnected, setWalletConnected] = useState(false);
+  // presaleStarted keeps track of whether the presale has started or not
+  const [presaleStarted, setPresaleStarted] = useState(false);
+  // presaleEnded keeps track of whether the presale ended
+  const [presaleEnded, setPresaleEnded] = useState(false);
+  // loading is set to true when we are waiting for a transaction to get mined
+  const [loading, setLoading] = useState(false);
+  // checks if the currently connected MetaMask wallet is the owner of the contract
+  const [isOwner, setIsOwner] = useState(false);
+  // tokenIdsMinted keeps track of the number of tokenIds that have been minted
+  const [tokenIdsMinted, setTokenIdsMinted] = useState("0");
+  // Create a reference to the Web3 Modal (used for connecting to Metamask) which persists as long as the page is open
+  const web3ModalRef = useRef();
+
+  /**
    * presaleMint: Mint an NFT during the presale
    */
   const presaleMint = async () => {
@@ -109,7 +109,7 @@ export default function Home() {
     }
   };
 
-const checkIfPresaleStarted = async () => {
+  const checkIfPresaleStarted = async () => {
     try {
       // Get the provider from web3Modal, which in our case is MetaMask
       // No need for the Signer here, as we are only reading state from the blockchain
@@ -299,4 +299,66 @@ const checkIfPresaleStarted = async () => {
           Start Presale!
         </button>
       );
+    } // If connected user is not the owner but presale hasn't started yet, tell them that
+    if (!presaleStarted) {
+      return (
+        <div>
+          <div className={styles.description}>Presale hasn&#39;t started!</div>
+        </div>
+      );
     }
+
+    // If presale started, but hasn't ended yet, allow for minting during the presale period
+    if (presaleStarted && !presaleEnded) {
+      return (
+        <div>
+          <div className={styles.description}>
+            Presale has started!!! If your address is whitelisted, Mint a Crypto
+            Dev 🥳
+          </div>
+          <button className={styles.button} onClick={presaleMint}>
+            Presale Mint 🚀
+          </button>
+        </div>
+      );
+    }
+
+    // If presale started and has ended, it's time for public minting
+    if (presaleStarted && presaleEnded) {
+      return (
+        <button className={styles.button} onClick={publicMint}>
+          Public Mint 🚀
+        </button>
+      );
+    }
+  };
+
+  return (
+    <div>
+      <Head>
+        <title>Crypto Devs</title>
+        <meta name="description" content="Whitelist-Dapp" />
+        <link rel="icon" href="/favicon.ico" />
+      </Head>
+      <div className={styles.main}>
+        <div>
+          <h1 className={styles.title}>Welcome to Crypto Devs!</h1>
+          <div className={styles.description}>
+            It&#39;s an NFT collection for developers in Crypto.
+          </div>
+          <div className={styles.description}>
+            {tokenIdsMinted}/20 have been minted
+          </div>
+          {renderButton()}
+        </div>
+        <div>
+          <img className={styles.image} src="./cryptodevs/0.svg" />
+        </div>
+      </div>
+
+      <footer className={styles.footer}>
+        Made with &#10084; by Crypto Devs
+      </footer>
+    </div>
+  );
+}
