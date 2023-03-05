@@ -4,6 +4,7 @@ import React, { useEffect, useRef, useState } from "react";
 import Web3Modal from "web3modal";
 import { abi, NFT_CONTRACT_ADDRESS } from "../constants";
 import styles from "../styles/Home.module.css";
+
 export default function Home() {
   // walletConnected keep track of whether the user's wallet is connected or not
   const [walletConnected, setWalletConnected] = useState(false);
@@ -109,6 +110,10 @@ export default function Home() {
     }
   };
 
+  /**
+   * checkIfPresaleStarted: checks if the presale has started by querying the `presaleStarted`
+   * variable in the contract
+   */
   const checkIfPresaleStarted = async () => {
     try {
       // Get the provider from web3Modal, which in our case is MetaMask
@@ -160,6 +165,10 @@ export default function Home() {
       return false;
     }
   };
+
+  /**
+   * getOwner: calls the contract to retrieve the owner
+   */
   const getOwner = async () => {
     try {
       // Get the provider from web3Modal, which in our case is MetaMask
@@ -254,6 +263,7 @@ export default function Home() {
       if (_presaleStarted) {
         checkIfPresaleEnded();
       }
+
       getTokenIdsMinted();
 
       // Set an interval which gets called every 5 seconds to check presale has ended
@@ -299,7 +309,9 @@ export default function Home() {
           Start Presale!
         </button>
       );
-    } // If connected user is not the owner but presale hasn't started yet, tell them that
+    }
+
+    // If connected user is not the owner but presale hasn't started yet, tell them that
     if (!presaleStarted) {
       return (
         <div>
@@ -357,7 +369,7 @@ export default function Home() {
       </div>
 
       <footer className={styles.footer}>
-        Made with &#10084; by Crypto Devs
+        Made with &#10084; by whynesspower
       </footer>
     </div>
   );
