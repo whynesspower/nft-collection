@@ -254,3 +254,49 @@ const checkIfPresaleStarted = async () => {
       if (_presaleStarted) {
         checkIfPresaleEnded();
       }
+      getTokenIdsMinted();
+
+      // Set an interval which gets called every 5 seconds to check presale has ended
+      const presaleEndedInterval = setInterval(async function () {
+        const _presaleStarted = await checkIfPresaleStarted();
+        if (_presaleStarted) {
+          const _presaleEnded = await checkIfPresaleEnded();
+          if (_presaleEnded) {
+            clearInterval(presaleEndedInterval);
+          }
+        }
+      }, 5 * 1000);
+
+      // set an interval to get the number of token Ids minted every 5 seconds
+      setInterval(async function () {
+        await getTokenIdsMinted();
+      }, 5 * 1000);
+    }
+  }, [walletConnected]);
+
+  /*
+      renderButton: Returns a button based on the state of the dapp
+    */
+  const renderButton = () => {
+    // If wallet is not connected, return a button which allows them to connect their wallet
+    if (!walletConnected) {
+      return (
+        <button onClick={connectWallet} className={styles.button}>
+          Connect your wallet
+        </button>
+      );
+    }
+
+    // If we are currently waiting for something, return a loading button
+    if (loading) {
+      return <button className={styles.button}>Loading...</button>;
+    }
+
+    // If connected user is the owner, and presale hasn't started yet, allow them to start the presale
+    if (isOwner && !presaleStarted) {
+      return (
+        <button className={styles.button} onClick={startPresale}>
+          Start Presale!
+        </button>
+      );
+    }
